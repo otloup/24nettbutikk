@@ -3,3 +3,9 @@ server:
     images/nginx
   ports:
     - "80:80"
+  expose:
+    - "80"
+  container_name:
+    server
+  volumes:
+    - ./:/app
