@@ -9,5 +9,5 @@ server:
     server
   volumes:
     - ./:/app
-  command:
-    - /bin/sh -c 'cd /app; php composer.phar update'
+  environment:
+    - PHP_DISPLAY_ERRORS=

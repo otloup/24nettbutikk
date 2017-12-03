@@ -22,16 +22,16 @@ class NBPCalculationService
 
     public function getMinValueFromPeriod()
     {
-
+        return 1;
     }
 
     public function getMaxValueFromPeriod()
     {
-
+        return 1;
     }
 
     public function getProfit($min, $max, $investment)
     {
-
+        return 1;
     }
 }

@@ -9,6 +9,7 @@
 namespace AppBundle\Service;
 
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 
 class NBPDataRetrievalService
@@ -22,9 +23,9 @@ class NBPDataRetrievalService
      */
     private $NBPCalculationService;
 
-    public function __construct(ClientInterface $client, NBPCalculationService $NBPCalculationService)
+    public function __construct(NBPCalculationService $NBPCalculationService)
     {
-        $this->client = $client;
+        $this->client = new Client();
         $this->NBPCalculationService = $NBPCalculationService;
     }
 

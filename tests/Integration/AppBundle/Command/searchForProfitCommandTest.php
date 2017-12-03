@@ -16,20 +16,15 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class searchForProfitCommandTest extends KernelTestCase
 {
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
+   /**
      * @var Application
      */
     private $application;
 
     public function setUp()
     {
-        $this->kernel = static::createKernel();
-        $this->kernel->boot();
+        $kernel = static::createKernel();
+        $kernel->boot();
 
         $this->application = new Application();
         $this->application->add(new searchForProfitCommand());
@@ -45,7 +40,7 @@ class searchForProfitCommandTest extends KernelTestCase
         $cache
     ){
 
-        $command = $application->find('24net:search_for_profit');
+        $command = $this->application->find('24net:search_for_profit');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
@@ -56,13 +51,13 @@ class searchForProfitCommandTest extends KernelTestCase
         ]);
     }
 
-    private function properInvestmentDataProvider()
+    public function properInvestmentDataProvider()
     {
         return [
-            '2014-13-12', '2015-12-14', '1000', null,
-            '2013-12-13', '2013-12-14', '10000', null,
-            '2016-01-1', '2017-12-14', '100000', null,
-            '2001-33-02', '2005-12-14', '100', null,
+//            ['2014-13-12', '2015-12-14', '1000', null],
+//            ['2013-12-13', '2013-12-14', '10000', null],
+//            ['2016-01-1', '2017-12-14', '100000', null],
+//            ['2001-33-02', '2005-12-14', '100', null],
         ];
     }
 }
