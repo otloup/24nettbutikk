@@ -10,9 +10,14 @@ namespace AppBundle\Service;
 
 class NBPCalculationService
 {
+    /**
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return array
+     */
     public function getDatePeriods(\DateTime $from, \DateTime $to)
     {
-
+        return [];
     }
 
     public function getMinValueFromPeriod()

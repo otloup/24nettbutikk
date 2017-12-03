@@ -2,46 +2,75 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Service\NBPCalculationService;
+use AppBundle\Service\NBPDataRetrievalService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class searchForProfitCommand extends ContainerAwareCommand
 {
     const NBP_TIME_LIMIT = 367;
     const DEFAULT_INVESTMENT = 600000;
-    const SAVE_SEARCH_RESULT = 1;
+
+    /**
+     * @var \DateTime
+     */
+    private $dateFrom;
+
+    /**
+     * @var \DateTime
+     */
+    private $dateTo;
+
+    /**
+     * @var int
+     */
+    private $investment;
+
+    /**
+     * @var NBPCalculationService
+     */
+    private $NBPCalculationService;
+
+    /**
+     * @var NBPDataRetrievalService
+     */
+    private $NBPDataRetrievalService;
 
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
+        $this->NBPCalculationService = $this->getContainer()->get(NBPCalculationService::class);
+        $this->NBPDataRetrievalService = $this->getContainer()->get(NBPDataRetrievalService::class);
+
         $this
-            ->setName('24net:search_for_profit_command')
+            ->setName('24net:search_for_profit')
             ->setDescription('search for most profitable time to invest in gold during last 5 years')
             ->addArgument(
                 'from',
                 InputArgument::REQUIRED,
-                'date from which to perform search'
+                'date from which to perform search. Valid format: year-day-month'
             )
             ->addArgument(
                 'to',
                 InputArgument::REQUIRED,
-                'date to which search is to be performed'
+                'date to which search is to be performed. Valid format: year-day-month'
             )
             ->addArgument(
                 'investment',
                 InputArgument::REQUIRED,
                 'amount to be invested', self::DEFAULT_INVESTMENT
             )
-            ->addArgument(
+            ->addOption(
                 'cache',
+                'c',
                 InputArgument::OPTIONAL,
                 'save search in cache to hasten the process next time',
-                self::SAVE_SEARCH_RESULT
+                false
             );
     }
 
@@ -51,10 +80,11 @@ class searchForProfitCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($this->validateArguments($input, $output)) {
-            $this->calculateDatePeriods();
             $this->getDataForPeriods();
-            $this->setReceivedData();
-            $this->calculateInvestment();
+            $investment = $this->getInvestment();
+
+            $output->write('return on your investment is' . $investment);
+            exit(0);
         } else {
             $output->write('supplied arguments are invalid');
             exit(1);
@@ -70,14 +100,47 @@ class searchForProfitCommand extends ContainerAwareCommand
      */
     private function validateArguments(InputInterface $input, OutputInterface $output)
     {
-        return true;
-    }
+        //retrieve passed arguments
+        $argumentDateFrom = $input->getArgument('from');
+        $argumentDateTo = $input->getArgument('to');
+        $investment = $input->getArgument('investment');
+        $cache = $input->getOption('cache');
 
-    /**
-     * divide time span into chunks consisting of number of days allowed by the API
-     */
-    private function calculateDatePeriods()
-    {
+        //check if dates have valid format
+        if (true === empty($argumentDateFrom) || true === empty($argumentDateTo)) {
+            $output->writeln('Date from and date to has to be filled');
+            return false;
+        }
+
+        /** \DateTime $convertedFrom */
+        if (false === $convertedFrom = \DateTime::createFromFormat('Y-d-m', $argumentDateFrom)){
+            $output->writeln("Date from doesn't have proper format of Year-Day-Month");
+            return false;
+        }
+
+        /** \DateTime $convertedTo */
+        if (false === ($convertedTo = \DateTime::createFromFormat('Y-d-m', $argumentDateTo))){
+            $output->writeln("Date to doesn't have proper format of Year-Day-Month");
+            return false;
+        }
+
+        if ($convertedTo < $convertedFrom) {
+            $this->dateFrom = $convertedFrom;
+            $this->dateTo = $convertedTo;
+        } else {
+            $output->writeln("Date to must be later than date from");
+            return false;
+        }
+
+        //check if investment is numeric
+        if (intval($investment) > 0) {
+            $this->investment = intval($investment);
+        } else {
+            $output->writeln("Investment amount must be a number");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -85,19 +148,15 @@ class searchForProfitCommand extends ContainerAwareCommand
      */
     private function getDataForPeriods()
     {
-    }
-
-    /**
-     * save data into cache
-     */
-    private function setReceivedData()
-    {
+        return $this->NBPDataRetrievalService->getDataForTimespan();
+        return true;
     }
 
     /**
      * calculate the best investment period for supplied time span
      */
-    private function calculateInvestment()
+    private function getInvestment()
     {
+        return 1;
     }
 }

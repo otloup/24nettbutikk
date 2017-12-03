@@ -9,14 +9,60 @@
 namespace Tests\AppBundle\Command;
 
 use AppBundle\Command\searchForProfitCommand;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-class searchForProfitCommandTest extends \PHPUnit_Framework_TestCase
+class searchForProfitCommandTest extends KernelTestCase
 {
     /**
-     * @dataProvider
+     * @var KernelInterface
      */
-    public function testExecute()
-    {
+    private $kernel;
 
+    /**
+     * @var Application
+     */
+    private $application;
+
+    public function setUp()
+    {
+        $this->kernel = static::createKernel();
+        $this->kernel->boot();
+
+        $this->application = new Application();
+        $this->application->add(new searchForProfitCommand());
+    }
+
+    /**
+     * @dataProvider properInvestmentDataProvider
+     */
+    public function testExecute(
+        $from,
+        $to,
+        $investment,
+        $cache
+    ){
+
+        $command = $application->find('24net:search_for_profit');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'from' => $from,
+            'to' => $to,
+            'investment' => $investment,
+            'cache' => $cache
+        ]);
+    }
+
+    private function properInvestmentDataProvider()
+    {
+        return [
+            '2014-13-12', '2015-12-14', '1000', null,
+            '2013-12-13', '2013-12-14', '10000', null,
+            '2016-01-1', '2017-12-14', '100000', null,
+            '2001-33-02', '2005-12-14', '100', null,
+        ];
     }
 }
