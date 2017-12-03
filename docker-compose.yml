@@ -9,3 +9,5 @@ server:
     server
   volumes:
     - ./:/app
+  command:
+    - /bin/sh -c 'cd /app; php composer.phar update'
