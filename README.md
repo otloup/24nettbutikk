@@ -1,5 +1,12 @@
+Requirements
+====
+ - docker
+ - docker-composer
+
 Setup
 ====
+Answers to questions are located on the main app page (default is set to localhost at port 80)
+
 `docker-compose up -d`
 
 (
@@ -11,13 +18,14 @@ Run investment command
 -
 `docker exec -it server php /app/bin/console 24net:search-for-profit`
 
-(command can receive arguments in order to change search period or investment)
+command can receive arguments in order to change search period or investment
+ - from: date from which to perform search. Valid format: year-month-day
+ - to: date to which search is to be performed. Valid format: year-month-day
+ - investment: amount to be invested
 
 Run tests via:
 -
 `docker exec -it server /app/vendor/bin/phpunit -c /app/phpunit.xml --testsuite Unit /app/tests`
-
-Answers to questions are located on the main app page (default is set to localhost at port 80)
 
 
 Known issues
@@ -26,7 +34,7 @@ Known issues
  - no integration tests
  - no command test
  
-  ... and ambitions
+  ... and aspirations
  -
  - retrieved data should be cached to REDIS for optimization
  - a sub-page to input data by hand and review them in form of a graph
