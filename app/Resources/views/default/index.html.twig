@@ -3,45 +3,149 @@
 {% block body %}
     <div id="wrapper">
         <div id="container">
-            <div id="welcome">
-                <h1><span>Welcome to</span> Symfony {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</h1>
-            </div>
-
             <div id="status">
                 <p>
-                    <svg id="icon-status" width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z" fill="#759E1A"/></svg>
-
-                    Your application is now ready. You can start working on it at:
-                    <code>{{ base_dir }}</code>
+                    <div class="question">
+                        What access modifiers are available in PHP for:<br />
+                        <ul>
+                            <li>class</li>
+                            <li>class method</li>
+                            <li>class property</li>
+                            <li>class const</li>
+                        </ul>
+                        Are they required? What will happen if we do not define them?<br />
+                    </div>
+                    <hr />
+                    <div class="answer">
+                        Classes can be defined as <b class="code">abstract</b> or <b class="code">final</b>.<br />
+                         - abstract classes are inhibited from being initialized, but can be inherited. Such class combines properties of both interface and standard class - that is it can contain empty method stubs as well as functional methods<br />
+                         - final classes are inhibited from being inherited<br />
+                        <br />
+                        Methods can be also defined as <b class="code">abstract</b>, which makes them similar to method stubs found in interfaces, but also can be<br />
+                         - private: such a method cannot be overridden or accessed by inheriting classes<br />
+                         - protected: protected method cannot be accessed outside of inheritance hierarchy, but can be overridden (yet, it's access level cannot be changed)<br />
+                         - public: public method is visible to the whole of the outside world - it can be accessed by anything implementing it's parent class, and can be overridden in the inheritance chain<br />
+                        <br />
+                        Properties share the same access modifiers as methods, without the <b class="code">abstract</b> keyword.<br />
+                        Consts can be either <b class="code">private</b> or <b class="code">public</b><br />
+                        <br />
+                        Without access modifiers, consts and methods are public; Properties have to have defined access modifier.
+                    </div>
                 </p>
-            </div>
-
-            <div id="next">
-                <h2>What's next?</h2>
                 <p>
-                    <svg id="icon-book" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="-12.5 9 64 64" enable-background="new -12.5 9 64 64" xml:space="preserve">
-                        <path fill="#AAA" d="M6.8,40.8c2.4,0.8,4.5-0.7,4.9-2.5c0.2-1.2-0.3-2.1-1.3-3.2l-0.8-0.8c-0.4-0.5-0.6-1.3-0.2-1.9
-                            c0.4-0.5,0.9-0.8,1.8-0.5c1.3,0.4,1.9,1.3,2.9,2.2c-0.4,1.4-0.7,2.9-0.9,4.2l-0.2,1c-0.7,4-1.3,6.2-2.7,7.5
-                            c-0.3,0.3-0.7,0.5-1.3,0.6c-0.3,0-0.4-0.3-0.4-0.3c0-0.3,0.2-0.3,0.3-0.4c0.2-0.1,0.5-0.3,0.4-0.8c0-0.7-0.6-1.3-1.3-1.3
-                            c-0.6,0-1.4,0.6-1.4,1.7s1,1.9,2.4,1.8c0.8,0,2.5-0.3,4.2-2.5c2-2.5,2.5-5.4,2.9-7.4l0.5-2.8c0.3,0,0.5,0.1,0.8,0.1
-                            c2.4,0.1,3.7-1.3,3.7-2.3c0-0.6-0.3-1.2-0.9-1.2c-0.4,0-0.8,0.3-1,0.8c-0.1,0.6,0.8,1.1,0.1,1.5c-0.5,0.3-1.4,0.6-2.7,0.4l0.3-1.3
-                            c0.5-2.6,1-5.7,3.2-5.8c0.2,0,0.8,0,0.8,0.4c0,0.2,0,0.2-0.2,0.5c-0.2,0.3-0.3,0.4-0.2,0.7c0,0.7,0.5,1.1,1.2,1.1
-                            c0.9,0,1.2-1,1.2-1.4c0-1.2-1.2-1.8-2.6-1.8c-1.5,0.1-2.8,0.9-3.7,2.1c-1.1,1.3-1.8,2.9-2.3,4.5c-0.9-0.8-1.6-1.8-3.1-2.3
-                            c-1.1-0.7-2.3-0.5-3.4,0.3c-0.5,0.4-0.8,1-1,1.6c-0.4,1.5,0.4,2.9,0.8,3.4l0.9,1c0.2,0.2,0.6,0.8,0.4,1.5c-0.3,0.8-1.2,1.3-2.1,1
-                            c-0.4-0.2-1-0.5-0.9-0.9c0.1-0.2,0.2-0.3,0.3-0.5s0.1-0.3,0.1-0.3c0.2-0.6-0.1-1.4-0.7-1.6c-0.6-0.2-1.2,0-1.3,0.8
-                            C4.3,38.4,4.7,40,6.8,40.8z M46.1,20.9c0-4.2-3.2-7.5-7.1-7.5h-3.8C34.8,10.8,32.7,9,30.2,9L-2.3,9.1c-2.8,0.1-4.9,2.4-4.9,5.4
-                            L-7,58.6c0,4.8,8.1,13.9,11.6,14.1l34.7-0.1c3.9,0,7-3.4,7-7.6L46.1,20.9z M-0.3,36.4c0-8.6,6.5-15.6,14.5-15.6
-                            c8,0,14.5,7,14.5,15.6S22.1,52,14.2,52C6.1,52-0.3,45-0.3,36.4z M42.1,65.1c0,1.8-1.5,3.1-3.1,3.1H4.6c-0.7,0-3-1.8-4.5-4.4h30.4
-                            c2.8,0,5-2.4,5-5.4V17.9h3.7c1.6,0,2.9,1.4,2.9,3.1V65.1L42.1,65.1z"/>
-                    </svg>
+                    <div class="question">
+                        We have an array defined by: $numbers = [1,3,6,7,9,11]; How can we get sum of all
+                        array elements? Provide some few algorithms to get that sum.
+                    </div>
+                    <hr />
+                    <div class="answer">
+                        <pre class="code">
+$numbers = [1,3,6,7,9,11];
 
-                    Read the documentation to learn
-                    <a href="https://symfony.com/doc/{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION')[:3] }}/page_creation.html">
-                        How to create your first page in Symfony
-                    </a>
+$sum = array_reduce($numbers, function($carry, $item){
+    return $item + $carry;
+});
+                        </pre>
+
+                        <pre class="code">
+$numbers = [1,3,6,7,9,11];
+
+$sum_two = 0;
+    for($i=0;$i&lt;count($numbers);$i++) {
+    $sum_two += $numbers[$i];
+}
+                        </pre>
+                        <pre class="code">
+$sum_three = 0;
+
+while(current($numbers)) {
+    $sum_three += current($numbers);
+    next($numbers);
+}
+                        </pre>
+                    </div>
+                </p>
+                <p>
+                    <div class="question">
+                        What is the difference between LEFT JOIN and INNER JOIN. What is the difference
+                        between MyISAM and InnoDB?
+                    </div>
+                    <hr />
+                    <div class="answer">
+                        <b class="code">LEFT JOIN</b> is characterised by padding empty results with NULL's;<br />
+                        E.g. :<br />
+                        Table users consists of user ids and logins<br />
+                        <table>
+                            <thead style="background-color: #565656">
+                                <tr>
+                                    <td>id</td>
+                                    <td>login</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>nabuchadnezzar</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>test</td>
+
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>test-2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        Table user_emails has data about their email addresses correlated to user's ids<br />
+                        <table>
+                            <thead style="background-color: #565656">
+                            <tr>
+                                <td>id</td>
+                                <td>email</td>
+                                <td>user_id</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>nabuchadnezzar@gmail.com</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>test-2</td>
+                                <td>3</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        Left joining users with user_email on user_email.user_id = user.id, we would receive three records, where email field assigned to user test would be NULL.<br />
+                        Same join query uning INNER instead of LEFT would result only in two record  - for user id 1 and 3.<br />
+                        <br />
+                        The main difference between MyISAM and InnoDB engines is that the latter support transactions, when MyISAM do not.<br />
+                        However, MyISAM does support fulltext search, for which InnoDB does not allow<br />
+                    </div>
+                </p>
+                <p>
+                    <div class="question">
+                        “Trait” - what is it? How can we use it?
+                    </div>
+                    <hr />
+                    <div class="answer">
+                        Traits are type of PHP objects enabling for a de facto multi-extending. With the help of traits code can inherently retrieve properties and methods contained in the selected trait. <br />
+                        Moreover implemented trait has access to the properties and methods of class it is implemented by.<br />
+                        To use a trait, besides autoloading the file, class has to declare usage in the following manner:<br />
+                        <pre class="code">
+class ClassName {
+    use TraitName;
+                        </pre>
+                        <br />
+                        The best example of such usage is logger, which doesn't have to be extended, or build. Once declared, implementing class can use it's log method to retrieve logging functionality with all of class tracking parameters (i.e. the magic __CLASS__ param of the callee) being automatically retrieved by the trait
+                    </div>
                 </p>
             </div>
-
         </div>
     </div>
 {% endblock %}
@@ -63,14 +167,5 @@
     #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
     #icon-book { display: none; }
 
-    @media (min-width: 768px) {
-        #wrapper { width: 80%; margin: 2em auto; }
-        #icon-book { display: inline-block; }
-        #status a, #next a { display: block; }
-
-        @-webkit-keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
-    }
 </style>
 {% endblock %}
