@@ -1,7 +1,7 @@
 Requirements
 ====
  - docker
- - docker-composer
+ - docker-compose
 
 Setup
 ====
