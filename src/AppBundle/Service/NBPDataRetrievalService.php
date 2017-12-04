@@ -11,9 +11,12 @@ namespace AppBundle\Service;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Uri;
 
 class NBPDataRetrievalService
 {
+    const NBP_API_TEMPLATE = 'http://api.nbp.pl/api/cenyzlota/%s/%s?format=json';
+
     /**
      * @var ClientInterface
      */
@@ -32,7 +35,8 @@ class NBPDataRetrievalService
     /**
      * @param \DateTime $from
      * @param \DateTime $to
-     * @return int
+     * @return array
+     * @throws \Exception
      */
     public function getDataForTimespan(\DateTime $from, \DateTime $to)
     {
@@ -42,10 +46,53 @@ class NBPDataRetrievalService
 
     /**
      * @param array $periods
-     * @return int
+     * @return array
+     * @throws \Exception
      */
     private function getDataForPeriods(array $periods)
     {
-        return 1;
+        $minPrice = PHP_INT_MAX;
+        $maxPrice = 0;
+
+        $minPriceDay = null;
+        $maxPriceDay = null;
+
+        foreach ($periods as $period) {
+            $response = $this->client->get(
+                new Uri(sprintf(self::NBP_API_TEMPLATE, $period['from'], $period['to']))
+            );
+
+            if ($response->getStatusCode() === 200) {
+                echo "requesting data for " . $period['from'] . " to " . $period['to'] . "\n";
+
+                $retrievedData = json_decode($response->getBody()->getContents(), true);
+
+                $minPeriodValue = $this->NBPCalculationService->getMinValueFromPeriod($retrievedData);
+                $maxPeriodValue = $this->NBPCalculationService->getMaxValueFromPeriod($retrievedData);
+
+                if ($minPeriodValue['price'] < $minPrice) {
+                    $minPrice = $minPeriodValue['price'];
+                    $minPriceDay = $minPeriodValue['date'];
+                }
+
+                if ($maxPeriodValue['price'] > $maxPrice) {
+                    $maxPrice = $maxPeriodValue['price'];
+                    $maxPriceDay = $maxPeriodValue['date'];
+                }
+            } else {
+                throw new \Exception('NBP API has returned response with code' . $response->getStatusCode());
+            }
+        }
+
+        return [
+            'min' => [
+                'price' => $minPrice,
+                'date' => $minPriceDay
+            ],
+            'max' => [
+                'price' => $maxPrice,
+                'date' => $maxPriceDay
+            ]
+        ];
     }
 }

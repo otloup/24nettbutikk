@@ -38,7 +38,7 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     {
         $periods = $this->NBPCalculationService->getDatePeriods($from, $to);
 
-        foreach($periods as $index => $period) {
+        foreach ($periods as $index => $period) {
             $this->assertArraySubset($expectedPeriods[$index], $period);
         }
     }
@@ -64,7 +64,7 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     {
         $minValue = $this->NBPCalculationService->getMinValueFromPeriod($period);
 
-        $this->assertEquals($expectedValue['min'], $minValue);
+        $this->assertEquals($expectedValue['min'], $minValue['price']);
     }
 
     /**
@@ -77,7 +77,7 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     {
         $maxValue = $this->NBPCalculationService->getMaxValueFromPeriod($period);
 
-        $this->assertEquals($expectedValue['max'], $maxValue);
+        $this->assertEquals($expectedValue['max'], $maxValue['price']);
     }
 
     /**
@@ -89,7 +89,7 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
      */
     public function testGetProfit($min, $max, $investment, $expectedValue)
     {
-        $profitValue = $this->NBPCalculationService->getProfit($min,$max,$investment);
+        $profitValue = $this->NBPCalculationService->getProfit($min, $max, $investment);
 
         $this->assertEquals($expectedValue, $profitValue);
     }
@@ -99,9 +99,9 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
         $now = new \DateTime('now');
         $yesterday = new \DateTime('yesterday');
         $jan1 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2016-01-01');
-        $dec13 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2014-13-12');
-        $dec14 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2015-14-12');
-        $dec15 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2017-15-12');
+        $dec13 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2014-12-13');
+        $dec14 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2015-12-14');
+        $dec15 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2017-12-15');
 
         return [
             'now_to_now' => [$now, $now, [
@@ -118,22 +118,22 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
             ]],
             'dec13_to_dec14' => [$dec13, $dec14, [
                 [
-                    'from' => '2014-13-12',
-                    'to' => '2015-14-12'
+                    'from' => '2014-12-13',
+                    'to' => '2015-12-14'
                 ]
             ]],
             'jan1_to_dec15' => [$jan1, $dec15, [
                 [
                     'from' => '2016-01-01',
                     'to' => (clone $jan1)
-                        ->modify('+'.NBPCalculationService::NBP_DAYS_LIMIT.' days')
+                        ->modify('+' . NBPCalculationService::NBP_DAYS_LIMIT . ' days')
                         ->format(NBPCalculationService::NBP_TIME_FORMAT)
                 ],
                 [
                     'from' => (clone $jan1)
-                        ->modify('+'.NBPCalculationService::NBP_DAYS_LIMIT.' days')
+                        ->modify('+' . NBPCalculationService::NBP_DAYS_LIMIT . ' days')
                         ->format(NBPCalculationService::NBP_TIME_FORMAT),
-                    'to' => '2017-15-12'
+                    'to' => '2017-12-15'
                 ]
             ]]
         ];
@@ -142,50 +142,50 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     public function periodPricesDataProvider()
     {
         return [
+            [
                 [
                     [
-                        [
-                            "data" => "2016-12-01",
-                            "cena" => 158.04
-                        ],
-                        [
-                            "data" => "2016-12-02",
-                            "cena" => 156.82
-                        ],
-                        [
-                            "data" => "2016-12-05",
-                            "cena" => 159.03
-                        ]
+                        "data" => "2016-12-01",
+                        "cena" => 158.04
                     ],
                     [
-                        'min' => 156.82,
-                        'max' => 159.03
+                        "data" => "2016-12-02",
+                        "cena" => 156.82
+                    ],
+                    [
+                        "data" => "2016-12-05",
+                        "cena" => 159.03
                     ]
                 ],
                 [
-                    [
-                        [
-                            "data" => "2016-12-06",
-                            "cena" => 157.75
-                        ],
-                        [
-                            "data" => "2016-12-07",
-                            "cena" => 157.68
-                        ],
-                        [
-                            "data" => "2016-12-08",
-                            "cena" => 156.24
-                        ],
-                        [
-                            "data" => "2016-12-09",
-                            "cena" => 154.77
-                        ]
-                    ],
-                    [
-                        'min' => 154.77,
-                        'max' => 157.75
-                    ],
+                    'min' => 156.82,
+                    'max' => 159.03
                 ]
+            ],
+            [
+                [
+                    [
+                        "data" => "2016-12-06",
+                        "cena" => 157.75
+                    ],
+                    [
+                        "data" => "2016-12-07",
+                        "cena" => 157.68
+                    ],
+                    [
+                        "data" => "2016-12-08",
+                        "cena" => 156.24
+                    ],
+                    [
+                        "data" => "2016-12-09",
+                        "cena" => 154.77
+                    ]
+                ],
+                [
+                    'min' => 154.77,
+                    'max' => 157.75
+                ],
+            ]
         ];
     }
 

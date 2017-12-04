@@ -10,8 +10,8 @@ namespace AppBundle\Service;
 
 class NBPCalculationService
 {
-    const NBP_DAYS_LIMIT = 367;
-    const NBP_TIME_FORMAT = 'Y-d-m';
+    const NBP_DAYS_LIMIT = 366;
+    const NBP_TIME_FORMAT = 'Y-m-d';
 
     /**
      * chop time frame between two dates into periods consisting of max number of days
@@ -28,7 +28,11 @@ class NBPCalculationService
          * validate if dates are properly oriented
          */
         if ($from > $to) {
-            throw new \Exception('date to cannot be greater than date from');
+            throw new \Exception('date from (' .
+                $to->format(self::NBP_TIME_FORMAT)
+                . ') cannot be greater than date to (' .
+                $from->format(self::NBP_TIME_FORMAT)
+                . ')');
         }
 
         /*
@@ -87,7 +91,7 @@ class NBPCalculationService
      */
     public function getMinValueFromPeriod(array $period)
     {
-        return $this->getExtreme($period, 'min');
+        return $this->getExtremePrice($period, 'min');
     }
 
     /**
@@ -98,7 +102,7 @@ class NBPCalculationService
      */
     public function getMaxValueFromPeriod(array $period)
     {
-        return $this->getExtreme($period, 'max');
+        return $this->getExtremePrice($period, 'max');
     }
 
     /**
@@ -131,14 +135,14 @@ class NBPCalculationService
      *
      * @param $haystack
      * @param string $mode
-     * @return mixed
+     * @return array
      */
-    private function getExtreme($haystack, $mode='min')
+    private function getExtremePrice($haystack, $mode = 'min')
     {
         /*
          * in case of further development allow for other methods for checking extremes
          */
-        $isExtreme = function($value, $comparison) use ($mode){
+        $isExtreme = function ($value, $comparison) use ($mode) {
             switch ($mode) {
                 case 'min':
                     return ($value < $comparison);
@@ -158,12 +162,18 @@ class NBPCalculationService
          * if other value validates the check, mark it as extreme and check the rest against it
          */
         $extreme = $haystack[0]['cena'];
+        $extremeDate = $haystack[0]['data'];
+
         foreach ($haystack as $price) {
             if ($isExtreme($price['cena'], $extreme)) {
                 $extreme = $price['cena'];
+                $extremeDate = $price['data'];
             }
         }
 
-        return $extreme;
+        return [
+            'date' => $extremeDate,
+            'price' => $extreme
+        ];
     }
 }
