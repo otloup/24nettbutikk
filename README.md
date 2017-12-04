@@ -1,4 +1,4 @@
-Run application
+Setup
 ====
 `docker-compose up -d`
 
