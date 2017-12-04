@@ -61,12 +61,12 @@ class SearchForProfitCommand extends ContainerAwareCommand
             ->addArgument(
                 'from',
                 InputArgument::OPTIONAL,
-                'date from which to perform search. Valid format: year-day-month'
+                'date from which to perform search. Valid format: year-month-day'
             )
             ->addArgument(
                 'to',
                 InputArgument::OPTIONAL,
-                'date to which search is to be performed. Valid format: year-day-month'
+                'date to which search is to be performed. Valid format: year-month-day'
             )
             ->addArgument(
                 'investment',
