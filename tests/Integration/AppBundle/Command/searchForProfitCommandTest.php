@@ -31,6 +31,10 @@ class searchForProfitCommandTest extends KernelTestCase
     }
 
     /**
+     * @param $from
+     * @param $to
+     * @param $investment
+     * @param $cache
      * @dataProvider properInvestmentDataProvider
      */
     public function testExecute(
