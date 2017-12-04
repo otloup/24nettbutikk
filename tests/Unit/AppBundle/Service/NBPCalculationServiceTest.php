@@ -25,10 +25,14 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     }
 
     /**
+     * check if periods are properly calculated
+     *
+     * @test
      * @param \DateTime $from
      * @param \DateTime $to
      * @param array $expectedPeriods
      * @dataProvider periodsDataProvider
+     * @throws \Exception
      */
     public function testGetDatePeriods($from, $to, $expectedPeriods)
     {
@@ -37,6 +41,17 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
         foreach($periods as $index => $period) {
             $this->assertArraySubset($expectedPeriods[$index], $period);
         }
+    }
+
+    /**
+     * check if improperly oriented dates are validated
+     * @test
+     * @throws \Exception
+     */
+    public function textGetDatePeriodsException()
+    {
+        $this->NBPCalculationService->getDatePeriods(new \DateTime('yesterday'), new \DateTime('now'));
+        $this->expectException(\Exception::class);
     }
 
     public function testGetMinValueFromPeriod()
@@ -62,37 +77,44 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
 
     public function periodsDataProvider()
     {
+        $now = new \DateTime('now');
+        $yesterday = new \DateTime('yesterday');
+        $jan1 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2016-01-01');
+        $dec13 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2014-13-12');
+        $dec14 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2015-14-12');
+        $dec15 = \DateTime::createFromFormat(NBPCalculationService::NBP_TIME_FORMAT, '2017-15-12');
+
         return [
-            [new \DateTime('now'), new \DateTime('now'), [
+            'now_to_now' => [$now, $now, [
                 [
-                    'from' => (new \DateTime('now'))->format('Y-d-m'),
-                    'to' => (new \DateTime('now'))->format('Y-d-m')
+                    'from' => $now->format(NBPCalculationService::NBP_TIME_FORMAT),
+                    'to' => $now->format(NBPCalculationService::NBP_TIME_FORMAT)
                 ]
             ]],
-            [new \DateTime('now'), new \DateTime('yesterday'), [
+            'yesterday_to_now' => [$yesterday, $now, [
                 [
-                    'from' => (new \DateTime('now'))->format('Y-d-m'),
-                    'to' => (new \DateTime('yesterday'))->format('Y-d-m')
+                    'from' => $yesterday->format(NBPCalculationService::NBP_TIME_FORMAT),
+                    'to' => $now->format(NBPCalculationService::NBP_TIME_FORMAT)
                 ]
             ]],
-            [new \DateTime('2014-12-12'), new \DateTime('2015-12-14'), [
+            'dec13_to_dec14' => [$dec13, $dec14, [
                 [
-                    'from' => '2014-12-12',
-                    'to' => '2015-12-14'
+                    'from' => '2014-13-12',
+                    'to' => '2015-14-12'
                 ]
             ]],
-            [new \DateTime('2016-01-1'), new \DateTime('2017-12-14'), [
+            'jan1_to_dec15' => [$jan1, $dec15, [
                 [
-                    'from' => '2016-01-1',
-                    'to' => (new \DateTime('2016-01-1'))
+                    'from' => '2016-01-01',
+                    'to' => (clone $jan1)
                         ->modify('+'.NBPCalculationService::NBP_DAYS_LIMIT.' days')
-                        ->format('Y-d-m')
+                        ->format(NBPCalculationService::NBP_TIME_FORMAT)
                 ],
                 [
-                    'from' => (new \DateTime('2016-01-1'))
+                    'from' => (clone $jan1)
                         ->modify('+'.NBPCalculationService::NBP_DAYS_LIMIT.' days')
-                        ->format('Y-d-m'),
-                    'to' => '2017-12-14'
+                        ->format(NBPCalculationService::NBP_TIME_FORMAT),
+                    'to' => '2017-15-12'
                 ]
             ]]
         ];

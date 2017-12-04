@@ -20,48 +20,61 @@ class NBPCalculationService
      * @param \DateTime $from
      * @param \DateTime $to
      * @return array
+     * @throws \Exception
      */
     public function getDatePeriods(\DateTime $from, \DateTime $to)
     {
-        $dayDiff = ($to->diff($from))->days;
-        $periods = [];
+        /*
+         * validate if dates are properly oriented
+         */
+        if ($to < $from) {
+            throw new \Exception('date to cannot be greater than date from');
+        }
 
         /*
-         * if the difference between start and end date is less than max number of days
-         * set one period to be created
-         *
-         * otherwise, create as many periods as the fixed number of days
-         * fits between the two dates
+         * all periods have the same humble beginning - from is always defined
          */
-        if ($dayDiff < self::NBP_DAYS_LIMIT) {
-            $periodsCount = 1;
-        } else {
-            $periodsCount = ceil($dayDiff / self::NBP_DAYS_LIMIT);
-        }
+        $periods = [];
+        $periods[] = [
+            'from' => $from->format(self::NBP_TIME_FORMAT),
+            'to' => null
+        ];
 
-        for ($quantifier = 0; $quantifier < $periodsCount; $quantifier ++) {
-            /*
-             * count days by which start date is to be incremented
+        /*
+         * count difference between days
+         * if difference is greater than the allowed number of days in one search period
+         * return multiple periods
+         *
+         * otherwise, create only one period
+         */
+        $daysDiff = $from->diff($to)->days;
+
+        if ($daysDiff / self::NBP_DAYS_LIMIT > 1) {
+            $interval = new \DateInterval('P' . self::NBP_DAYS_LIMIT . 'D');
+            $period = new \DatePeriod($from, $interval, $to);
+
+            /**
+             * iterate through generated periods.
+             * Append 'to' date to the previous one and generate next one with empty 'to' date
+             * @var integer $index
+             * @var \DateTime $date
              */
-            $daysIncrement = self::NBP_DAYS_LIMIT * $quantifier;
+            foreach ($period as $index => $date) {
+                $current = $date->format(self::NBP_TIME_FORMAT);
+                $previous = $index === 0 ? 0 : $index - 1;
 
-            $fromDate = $from->modify('+'.$daysIncrement.' days');
-
-            /*
-             * if the script is on it's last period iteration, return end date
-             * otherwise, add days to the start date
-             */
-            if ($quantifier === $periodsCount - 1) {
-                $toDate = $to;
-            } else {
-                $toDate = self::NBP_DAYS_LIMIT * ($quantifier - 1);
+                $periods[$previous]['to'] = $current;
+                $periods[$index] = [
+                    'from' => $current,
+                    'to' => null
+                ];
             }
-
-            $periods[$quantifier] = [
-                'from' => $fromDate->format(self::NBP_TIME_FORMAT),
-                'to' => $toDate->format(self::NBP_TIME_FORMAT)
-            ];
         }
+
+        /*
+         * append 'to' date for the last period, since it always will be defined
+         */
+        $periods[count($periods) - 1]['to'] = $to->format(self::NBP_TIME_FORMAT);
 
         return $periods;
     }
