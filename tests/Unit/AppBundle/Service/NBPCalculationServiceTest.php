@@ -46,26 +46,38 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
     /**
      * check if improperly oriented dates are validated
      * @test
-     * @throws \Exception
+     * @expectedException \Exception
      */
     public function textGetDatePeriodsException()
     {
-        $this->NBPCalculationService->getDatePeriods(new \DateTime('yesterday'), new \DateTime('now'));
+        $this->NBPCalculationService->getDatePeriods(new \DateTime('now'), new \DateTime('yesterday'));
         $this->expectException(\Exception::class);
     }
 
-    public function testGetMinValueFromPeriod()
+    /**
+     * @test
+     * @dataProvider periodPricesDataProvider
+     * @param array $period
+     * @param float $expectedValue
+     */
+    public function testGetMinValueFromPeriod($period, $expectedValue)
     {
-        $minValue = $this->NBPCalculationService->getMinValueFromPeriod();
+        $minValue = $this->NBPCalculationService->getMinValueFromPeriod($period);
 
-        $this->assertEquals(1, $minValue);
+        $this->assertEquals($expectedValue['min'], $minValue);
     }
 
-    public function testGetMaxValueFromPeriod()
+    /**
+     * @test
+     * @dataProvider periodPricesDataProvider
+     * @param array $period
+     * @param float $expectedValue
+     */
+    public function testGetMaxValueFromPeriod($period, $expectedValue)
     {
-        $maxValue = $this->NBPCalculationService->getMaxValueFromPeriod();
+        $maxValue = $this->NBPCalculationService->getMaxValueFromPeriod($period);
 
-        $this->assertEquals(1, $maxValue);
+        $this->assertEquals($expectedValue['max'], $maxValue);
     }
 
     public function testGetProfit()
@@ -120,8 +132,53 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
         ];
     }
 
-    public function dateIntervalsDataProvider()
+    public function periodPricesDataProvider()
     {
-        return [];
+        return [
+                [
+                    [
+                        [
+                            "data" => "2016-12-01",
+                            "cena" => 158.04
+                        ],
+                        [
+                            "data" => "2016-12-02",
+                            "cena" => 156.82
+                        ],
+                        [
+                            "data" => "2016-12-05",
+                            "cena" => 159.03
+                        ]
+                    ],
+                    [
+                        'min' => 156.82,
+                        'max' => 159.03
+                    ]
+                ],
+                [
+                    [
+                        [
+                            "data" => "2016-12-06",
+                            "cena" => 157.75
+                        ],
+                        [
+                            "data" => "2016-12-07",
+                            "cena" => 157.68
+                        ],
+                        [
+                            "data" => "2016-12-08",
+                            "cena" => 156.24
+                        ],
+                        [
+                            "data" => "2016-12-09",
+                            "cena" => 154.77
+                        ]
+                    ],
+                    [
+                        'min' => 154.77,
+                        'max' => 157.75
+                    ],
+                ]
+        ];
     }
 }

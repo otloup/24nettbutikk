@@ -27,7 +27,7 @@ class NBPCalculationService
         /*
          * validate if dates are properly oriented
          */
-        if ($to < $from) {
+        if ($from > $to) {
             throw new \Exception('date to cannot be greater than date from');
         }
 
@@ -79,18 +79,64 @@ class NBPCalculationService
         return $periods;
     }
 
-    public function getMinValueFromPeriod()
+    /**
+     * get lowest price in given period
+     *
+     * @param array $period
+     * @return mixed
+     */
+    public function getMinValueFromPeriod(array $period)
     {
-        return 1;
+        return $this->getExtreme($period, 'min');
     }
 
-    public function getMaxValueFromPeriod()
+    /**
+     * get highest price in given period
+     *
+     * @param array $period
+     * @return mixed
+     */
+    public function getMaxValueFromPeriod(array $period)
     {
-        return 1;
+        return $this->getExtreme($period, 'max');
     }
 
     public function getProfit($min, $max, $investment)
     {
         return 1;
+    }
+
+    /**
+     * get extreme value out of haystack
+     *
+     * @param $haystack
+     * @param string $mode
+     * @return mixed
+     */
+    private function getExtreme($haystack, $mode='min')
+    {
+        $isExtreme = function($value, $comparison) use ($mode){
+            switch ($mode) {
+                case 'min':
+                    return ($value < $comparison);
+                    break;
+
+                case 'max':
+                    return ($value > $comparison);
+                    break;
+
+                default:
+                    return false;
+            }
+        };
+
+        $extreme = $haystack[0]['cena'];
+        foreach ($haystack as $price) {
+            if ($isExtreme($price['cena'], $extreme)) {
+                $extreme = $price['cena'];
+            }
+        }
+
+        return $extreme;
     }
 }
