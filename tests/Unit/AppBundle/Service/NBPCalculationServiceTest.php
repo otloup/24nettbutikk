@@ -80,11 +80,18 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
         $this->assertEquals($expectedValue['max'], $maxValue);
     }
 
-    public function testGetProfit()
+    /**
+     * @param float $min
+     * @param float $max
+     * @param float $investment
+     * @param float $expectedValue
+     * @dataProvider profitDataProvider
+     */
+    public function testGetProfit($min, $max, $investment, $expectedValue)
     {
-        $profitValue = $this->NBPCalculationService->getProfit(1,1,1);
+        $profitValue = $this->NBPCalculationService->getProfit($min,$max,$investment);
 
-        $this->assertEquals(1, $profitValue);
+        $this->assertEquals($expectedValue, $profitValue);
     }
 
     public function periodsDataProvider()
@@ -179,6 +186,15 @@ class NBPCalculationServiceTest extends ContainerAwareTestCase
                         'max' => 157.75
                     ],
                 ]
+        ];
+    }
+
+    public function profitDataProvider()
+    {
+        return [
+            [12.15, 15.4, 100000, 126748.97],
+            [1.15, 5.4, 1000.6, 4698.46],
+            [120.09, 121, 500, 503.78],
         ];
     }
 }

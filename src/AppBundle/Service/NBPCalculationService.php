@@ -101,9 +101,29 @@ class NBPCalculationService
         return $this->getExtreme($period, 'max');
     }
 
+    /**
+     * count maximal yield of investment based on purchasing power and stock price
+     *
+     * @param float $min
+     * @param float $max
+     * @param float $investment
+     * @return float
+     */
     public function getProfit($min, $max, $investment)
     {
-        return 1;
+        /*
+         * count the maximum number of available purchases
+         * multiply it by the highest fount price
+         */
+        $availableStocks = $investment / $min;
+        $profit = $availableStocks * $max;
+
+        /*
+         * since number_format rounds everything after requested decimal length, overshoot point placement
+         * convert format to string and retrieve un-rounded decimals
+         */
+        $profitFormat = explode('.', (string)number_format($profit, 100, '.', ''));
+        return floatval($profitFormat[0] . '.' . substr($profitFormat[1], 0, 2));
     }
 
     /**
@@ -115,6 +135,9 @@ class NBPCalculationService
      */
     private function getExtreme($haystack, $mode='min')
     {
+        /*
+         * in case of further development allow for other methods for checking extremes
+         */
         $isExtreme = function($value, $comparison) use ($mode){
             switch ($mode) {
                 case 'min':
@@ -130,6 +153,10 @@ class NBPCalculationService
             }
         };
 
+        /*
+         * assume that first value is extreme
+         * if other value validates the check, mark it as extreme and check the rest against it
+         */
         $extreme = $haystack[0]['cena'];
         foreach ($haystack as $price) {
             if ($isExtreme($price['cena'], $extreme)) {
